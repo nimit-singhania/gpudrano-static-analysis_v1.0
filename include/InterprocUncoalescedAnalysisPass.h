@@ -21,8 +21,8 @@
 #ifndef LLVM_INTERPROC_UNCOALESCED_ANALYSIS_PASS_H
 #define LLVM_INTERPROC_UNCOALESCED_ANALYSIS_PASS_H
 
-#include "MultiplierValue.h"
-#include "UncoalescedAnalysis.h"
+#include "llvm/Transforms/MultiplierValue.h"
+#include "llvm/Transforms/UncoalescedAnalysis.h"
 
 #include "llvm/ADT/SCCIterator.h"
 #include "llvm/ADT/Statistic.h"

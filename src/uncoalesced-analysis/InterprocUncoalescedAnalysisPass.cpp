@@ -1,6 +1,6 @@
 #define DEBUG_TYPE "uncoalesced-analysis"
 
-#include "InterprocUncoalescedAnalysisPass.h"
+#include "llvm/Transforms/InterprocUncoalescedAnalysisPass.h"
 
 using namespace llvm;
 

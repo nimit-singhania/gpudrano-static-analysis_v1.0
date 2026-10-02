@@ -1,6 +1,6 @@
 #define DEBUG_TYPE "uncoalesced-analysis"
 
-#include "UncoalescedAnalysis.h"
+#include "llvm/Transforms/UncoalescedAnalysis.h"
 
 using namespace llvm;
 

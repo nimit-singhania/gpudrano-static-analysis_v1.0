@@ -12,8 +12,8 @@
 #ifndef LLVM_INTERPROC_BSI_ANALYSIS_PASS_H
 #define LLVM_INTERPROC_BSI_ANALYSIS_PASS_H
 
-#include "BSizeDependenceValue.h"
-#include "BlockSizeInvarianceAnalysis.h"
+#include "llvm/Transforms/BSizeDependenceValue.h"
+#include "llvm/Transforms/BlockSizeInvarianceAnalysis.h"
 
 #include "llvm/ADT/SCCIterator.h"
 #include "llvm/ADT/Statistic.h"

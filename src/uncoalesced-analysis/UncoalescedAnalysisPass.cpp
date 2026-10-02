@@ -1,4 +1,4 @@
-#include "UncoalescedAnalysisPass.h"
+#include "llvm/Transforms/UncoalescedAnalysisPass.h"
 
 using namespace llvm;
 
@@ -17,11 +17,13 @@ bool UncoalescedAnalysisPass::runOnFunction(Function &F) {
 
 char UncoalescedAnalysisPass::ID = 0;
 /*
-INITIALIZE_PASS_BEGIN(UncoalescedAnalysisPass, "uncoalesced-analysis", "Pass to generate uncoalesced access analysis for GPU programs",
-                      true, true)
+INITIALIZE_PASS_BEGIN(UncoalescedAnalysisPass, "uncoalesced-analysis", "Pass to generate uncoalesced access analysis for GPU programs", true, true)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
-INITIALIZE_PASS_END(UncoalescedAnalysisPass, "uncoalesced-analysis", "Pass to generate uncoalesced access analysis for GPU programs",
-                    true, true)
+INITIALIZE_PASS_END(UncoalescedAnalysisPass, "uncoalesced-analysis", "Pass to generate uncoalesced access analysis for GPU programs", true, true)
 */
 static RegisterPass<UncoalescedAnalysisPass>
 Y("uncoalesced-analysis", "Pass to detect uncoalesced accesses in gpu programs.");
+
+FunctionPass* createUncoalescedAnalysisPass() {
+  return new UncoalescedAnalysisPass();
+}

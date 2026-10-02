@@ -1,6 +1,6 @@
 #define DEBUG_TYPE "bsize-invariance-analysis"
 
-#include "BlockSizeInvarianceAnalysis.h"
+#include "llvm/Transforms/BlockSizeInvarianceAnalysis.h"
 
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Instructions.h"

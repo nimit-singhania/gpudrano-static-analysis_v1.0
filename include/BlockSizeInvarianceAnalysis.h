@@ -1,9 +1,9 @@
 #ifndef BLOCK_SIZE_INVARIANCE_ANALYSIS_H
 #define BLOCK_SIZE_INVARIANCE_ANALYSIS_H
 
-#include "AbstractExecutionEngine.h"
-#include "BSizeDependenceValue.h"
-#include "BSizeGPUState.h"
+#include "llvm/Transforms/AbstractExecutionEngine.h"
+#include "llvm/Transforms/BSizeDependenceValue.h"
+#include "llvm/Transforms/BSizeGPUState.h"
 
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/Instruction.h"

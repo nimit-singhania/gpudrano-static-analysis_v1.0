@@ -18,8 +18,8 @@
 #ifndef LLVM_UNCOALESCED_ANALYSIS_PASS_H
 #define LLVM_UNCOALESCED_ANALYSIS_PASS_H
 
-#include "MultiplierValue.h"
-#include "UncoalescedAnalysis.h"
+#include "llvm/Transforms/MultiplierValue.h"
+#include "llvm/Transforms/UncoalescedAnalysis.h"
 
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/CFG.h"
@@ -35,6 +35,8 @@
 #include <list>
 
 namespace llvm {
+
+FunctionPass* createUncoalescedAnalysisPass();
 
 struct UncoalescedAnalysisPass : public FunctionPass {
   std::set<const Instruction*> UncoalescedAccesses_;

@@ -1,9 +1,9 @@
 #ifndef UNCOALESCED_ACCESS_ANALYSIS_H
 #define UNCOALESCED_ACCESS_ANALYSIS_H
 
-#include "AbstractExecutionEngine.h"
-#include "MultiplierValue.h"
-#include "GPUState.h"
+#include "llvm/Transforms/AbstractExecutionEngine.h"
+#include "llvm/Transforms/MultiplierValue.h"
+#include "llvm/Transforms/GPUState.h"
 
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/IR/Dominators.h"

@@ -1,8 +1,8 @@
 #ifndef GPU_STATE_H
 #define GPU_STATE_H
 
-#include "AbstractState.h"
-#include "MultiplierValue.h"
+#include "llvm/Transforms/AbstractState.h"
+#include "llvm/Transforms/MultiplierValue.h"
 
 using namespace llvm;
 

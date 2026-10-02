@@ -58,14 +58,18 @@ block-size invariance analysis) can be done similarly.
 
    Ensure `subversion` is installed. Download the newest version of LLVM:
 ```
-    svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
- ```
+    wget https://releases.llvm.org/7.0.0/llvm-7.0.0.src.tar.xz
+    tar -xvf llvm-7.0.0.src.tar.xz
+    mv llvm-7.0.0.src llvm
+```
 2) Get Clang source:
 
    Change your current working directory to `llvm/tools/` and check out `clang`
    from the svn repository:
 ```
-    svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
+    wget https://releases.llvm.org/7.0.0/cfe-7.0.0.src.tar.xz
+    tar -xvf cfe-7.0.0.src.tar.xz
+    mv cfe-7.0.0.src clang
 ```
 3) Add GPU Drano to LLVM:
 

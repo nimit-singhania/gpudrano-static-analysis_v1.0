@@ -1,4 +1,4 @@
-#include "GPUState.h"
+#include "llvm/Transforms/GPUState.h"
 
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/GlobalVariable.h"

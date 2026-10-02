@@ -14,9 +14,9 @@
 #ifndef LLVM_BLOCK_SIZE_INVARIANCE_ANALYSIS_PASS_H
 #define LLVM_BLOCK_SIZE_INVARIANCE_ANALYSIS_PASS_H
 
-#include "BSizeDependenceValue.h"
-#include "BSizeGPUState.h"
-#include "BlockSizeInvarianceAnalysis.h"
+#include "llvm/Transforms/BSizeDependenceValue.h"
+#include "llvm/Transforms/BSizeGPUState.h"
+#include "llvm/Transforms/BlockSizeInvarianceAnalysis.h"
 
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/CFG.h"
@@ -32,6 +32,8 @@
 #include <list>
 
 namespace llvm {
+
+FunctionPass* createBlockSizeInvarianceAnalysisPass();
 
 struct BlockSizeInvarianceAnalysisPass : public FunctionPass {
   // Set of array accesses that are dependent on block size.

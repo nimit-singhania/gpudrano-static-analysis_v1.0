@@ -1,6 +1,6 @@
 #define DEBUG_TYPE "bsize-invariance-analysis"
 
-#include "InterprocBSIAnalysisPass.h"
+#include "llvm/Transforms/InterprocBSIAnalysisPass.h"
 
 #include <cxxabi.h>
 

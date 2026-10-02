@@ -1,7 +1,7 @@
 #ifndef ABSTRACT_STATE_H
 #define ABSTRACT_STATE_H
 
-#include "AbstractValue.h"
+#include "llvm/Transforms/AbstractValue.h"
 
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Value.h"

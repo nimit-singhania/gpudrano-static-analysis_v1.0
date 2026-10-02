@@ -1,8 +1,8 @@
 #ifndef BSIZE_GPU_STATE_H
 #define BSIZE_GPU_STATE_H
 
-#include "AbstractState.h"
-#include "BSizeDependenceValue.h"
+#include "llvm/Transforms/AbstractState.h"
+#include "llvm/Transforms/BSizeDependenceValue.h"
 
 using namespace llvm;
 

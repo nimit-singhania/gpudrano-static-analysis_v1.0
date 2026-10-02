@@ -1,6 +1,6 @@
 #define DEBUG_TYPE "bsize-invariance-analysis"
 
-#include "BlockSizeInvarianceAnalysisPass.h"
+#include "llvm/Transforms/BlockSizeInvarianceAnalysisPass.h"
 
 #include <cxxabi.h>
 
@@ -58,3 +58,7 @@ bool BlockSizeInvarianceAnalysisPass::runOnFunction(Function &F) {
 char BlockSizeInvarianceAnalysisPass::ID = 0;
 static RegisterPass<BlockSizeInvarianceAnalysisPass>
 Y("bsize-invariance-analysis", "Pass to check block-size invariance of GPU kernels.");
+
+FunctionPass* createBlockSizeInvarianceAnalysisPass() {
+  return new BlockSizeInvarianceAnalysisPass();
+}

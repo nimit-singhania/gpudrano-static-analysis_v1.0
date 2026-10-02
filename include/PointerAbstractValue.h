@@ -1,7 +1,7 @@
 #ifndef POINTER_ABSTRACT_VALUE_H
 #define POINTER_ABSTRACT_VALUE_H
 
-#include "AbstractValue.h"
+#include "llvm/Transforms/AbstractValue.h"
 
 // This class defines that an abstract value that distinguishes address (lvalue)
 // of a variable from the value (rvalue) of the variable. Hence, it keeps a flag
