@@ -14,10 +14,11 @@ CORES=4
 
 # ============ Derived =================
 # LLVM Source Dir
-LLVM_DIR=$ROOT_DIR/llvm
+LLVM_PROJECT_DIR=$ROOT_DIR/llvm-project
+LLVM_DIR=$LLVM_PROJECT_DIR/llvm
 
 # LLVM Build Dir
-LLVM_BUILD_DIR=$ROOT_DIR/build
+LLVM_BUILD_DIR=$LLVM_PROJECT_DIR/build
 
 # GPUDrano Include Dir
 INCLUDE_DIR=$ROOT_DIR/include
@@ -34,16 +35,17 @@ RODINIA_DIR=$ROOT_DIR/rodinia_3.1
 # =========== Build Rules =============
 # Get LLVM
 #svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm &&
-wget https://releases.llvm.org/7.0.0/llvm-7.0.0.src.tar.xz
-tar -xvf llvm-7.0.0.src.tar.xz
-mv llvm-7.0.0.src llvm
+#wget https://releases.llvm.org/7.0.0/llvm-7.0.0.src.tar.xz
+#tar -xvf llvm-7.0.0.src.tar.xz
+#mv llvm-7.0.0.src llvm
+git clone https://github.com/llvm/llvm-project.git
 
 # Get Clang
-cd ${LLVM_DIR}/tools/ &&
+# cd ${LLVM_DIR}/tools/ &&
 # svn co http://llvm.org/svn/llvm-project/cfe/trunk clang &&
-wget https://releases.llvm.org/7.0.0/cfe-7.0.0.src.tar.xz
-tar -xvf cfe-7.0.0.src.tar.xz
-mv cfe-7.0.0.src clang
+# wget https://releases.llvm.org/7.0.0/cfe-7.0.0.src.tar.xz
+# tar -xvf cfe-7.0.0.src.tar.xz
+# mv cfe-7.0.0.src clang
 
 # Get GPUDrano
 cd ${ROOT_DIR} &&
@@ -66,9 +68,9 @@ fi
 
 # Build GPUDrano
 mkdir -p ${LLVM_BUILD_DIR} &&
-cd ${LLVM_BUILD_DIR} &&
+cd ${LLVM_PROJECT_DIR} &&
 echo "Building LLVM..."
-cmake -G 'Unix Makefiles' ${LLVM_DIR} &&
+cmake -B ${LLVM_BUILD_DIR} -S llvm -G 'Unix Makefiles' -DLLVM_ENABLE_PROJECTS="clang;lld" &&
 make -j $CORES
 sudo make install
 

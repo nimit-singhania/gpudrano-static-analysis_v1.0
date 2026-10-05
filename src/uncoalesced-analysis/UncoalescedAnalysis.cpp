@@ -66,7 +66,7 @@ size_t UncoalescedAnalysis::getBaseTypeSize(
     return baseSizeMap_.at(v);
   }
   // Extract native type from pointer type.
-  while (ty->isPointerTy()) ty = cast<PointerType>(ty)->getElementType();
+  while (ty->isPointerTy()) ty = cast<PointerType>(ty)->getArrayElementType();
   // Extract the type of array elements.
   while (ty->isArrayTy()) ty = cast<ArrayType>(ty)->getElementType();
   return DL.getTypeAllocSize(const_cast<Type*>(ty));
@@ -140,21 +140,21 @@ GPUState UncoalescedAnalysis::ExecuteInstruction(
         st.setValue(CI, MultiplierValue(TOP));
       } else {
         StringRef name = calledF->getName();
-        if (name.equals("llvm.nvvm.read.ptx.sreg.tid.x")) {
+        if (name == ("llvm.nvvm.read.ptx.sreg.tid.x")) {
           st.setValue(CI, MultiplierValue(ONE));
-        } else if (name.equals("llvm.nvvm.read.ptx.sreg.tid.y") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.tid.z") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ntid.x") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ntid.y") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ntid.z") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ctaid.x") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ctaid.y") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.ctaid.z") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.nctaid.x") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.nctaid.y") ||
-            name.equals("llvm.nvvm.read.ptx.sreg.nctaid.z")) {
+        } else if (name == ("llvm.nvvm.read.ptx.sreg.tid.y") ||
+            name == ("llvm.nvvm.read.ptx.sreg.tid.z") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ntid.x") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ntid.y") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ntid.z") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ctaid.x") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ctaid.y") ||
+            name == ("llvm.nvvm.read.ptx.sreg.ctaid.z") ||
+            name == ("llvm.nvvm.read.ptx.sreg.nctaid.x") ||
+            name == ("llvm.nvvm.read.ptx.sreg.nctaid.y") ||
+            name == ("llvm.nvvm.read.ptx.sreg.nctaid.z")) {
           st.setValue(CI, MultiplierValue(ZERO));
-        } else if (name.equals("llvm.memcpy.p0i8.p0i8.i64")) {
+        } else if (name == ("llvm.memcpy.p0i8.p0i8.i64")) {
           // ***** Handling special case of copy between data structures. *****
           Value* dstOperand = CI->getArgOperand(0);
           if (isa<BitCastInst>(dstOperand)) {
@@ -186,7 +186,7 @@ GPUState UncoalescedAnalysis::ExecuteInstruction(
         // Iterate over arguments and update argMap.
         unsigned i = 0;
         for (auto argIt = calledF->arg_begin();
-             argIt != calledF->arg_end() && i < CI->getNumArgOperands();
+             argIt != calledF->arg_end() && i < CI->getNumOperands();
                                                                  argIt++) {
           const Value* arg = &*argIt;
           MultiplierValue v = st.getValue(CI->getArgOperand(i));
@@ -339,11 +339,10 @@ GPUState UncoalescedAnalysis::ExecuteInstruction(
     LLVM_DEBUG(errs() << "...Dominator Instruction for PHI node:"
         << "\n     " << *domBlock->getTerminator() << "\n");
 
-    if (isa<BranchInst>(domBlock->getTerminator())) {
-      const BranchInst *BI = cast<BranchInst>(domBlock->getTerminator());
+    if (isa<CondBrInst>(domBlock->getTerminator())) {
+      const CondBrInst *BI = cast<CondBrInst>(domBlock->getTerminator());
       // Dominating branch statement found!
-      if (BI->isConditional() &&
-          st.getValue(BI->getCondition()).getType() == ZERO) {
+      if (st.getValue(BI->getCondition()).getType() == ZERO) {
         // Branch is threadId-independent.
         MultiplierValue v = st.getValue(PHI);
         for(unsigned i = 0; i < PHI->getNumIncomingValues(); i++) {
@@ -373,32 +372,26 @@ GPUState UncoalescedAnalysis::ExecuteInstruction(
     }
     st.setValue(CI, v);
 
-  } else if (isa<BranchInst>(I)) {
-    const BranchInst* BI = cast<BranchInst>(I);
-    if (BI->isConditional()) {
-      const Value* cond = BI->getCondition();
-      const BasicBlock* nb1 = BI->getSuccessor(0);
-      const BasicBlock* nb2 = BI->getSuccessor(1);
-      GPUState st1 = st;
-      GPUState st2 = st;
-      // Get the abstract value for branch condition.
-      MultiplierValue v = st.getValue(cond);
-      // Compute number of threads on the two branches.
-      st1.setNumThreads(v && st.getNumThreads());
-      st2.setNumThreads((- v) && st.getNumThreads());
-      // Add new items to the buffer.
-      AddBlockToExecute(nb1, st1);
-      AddBlockToExecute(nb2, st2);
-    } else {
-      const BasicBlock* nb = BI->getSuccessor(0);
-      AddBlockToExecute(nb, st);
-    }
+  } else if (isa<CondBrInst>(I)) {
+    const CondBrInst* BI = cast<CondBrInst>(I);
+    const Value* cond = BI->getCondition();
+    const BasicBlock* nb1 = BI->getSuccessor(0);
+    const BasicBlock* nb2 = BI->getSuccessor(1);
+    GPUState st1 = st;
+    GPUState st2 = st;
+    // Get the abstract value for branch condition.
+    MultiplierValue v = st.getValue(cond);
+    // Compute number of threads on the two branches.
+    st1.setNumThreads(v && st.getNumThreads());
+    st2.setNumThreads((- v) && st.getNumThreads());
+    // Add new items to the buffer.
+    AddBlockToExecute(nb1, st1);
+    AddBlockToExecute(nb2, st2);
 
-  } else if (isa<TerminatorInst>(I)) {
+  } else if (IsTerminator(I)) {
     // Add next blocks.
-    const TerminatorInst *TI = cast<TerminatorInst>(I);
-    for (unsigned i = 0; i < TI->getNumSuccessors(); i++) {
-      const BasicBlock *nb = TI->getSuccessor(i);
+    for (unsigned i = 0; i < I->getNumSuccessors(); i++) {
+      const BasicBlock *nb = I->getSuccessor(i);
       AddBlockToExecute(nb, st);
     }
   }

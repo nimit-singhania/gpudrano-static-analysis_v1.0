@@ -7,6 +7,7 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include <list> 
@@ -62,6 +63,9 @@ class AbstractExecutionEngine {
   // Executes the instruction on a state and returns the state after execution.
   virtual U ExecuteInstruction(const Instruction* inst,
                                U st) = 0;
+
+  // Utils
+  static bool IsTerminator(const Instruction* I);
 
  protected:
   // Entry block where the abstract execution begins.
@@ -203,6 +207,17 @@ void AbstractExecutionEngine<T, U>::Execute() {
       }
     }
   }
+}
+
+// Utils
+template<typename T, typename U>
+bool AbstractExecutionEngine<T, U>::IsTerminator(const Instruction* I) {
+    return isa<UncondBrInst>(I) ||
+	   isa<CondBrInst>(I) ||
+	   isa<IndirectBrInst>(I) ||
+	   isa<CatchSwitchInst>(I) ||
+	   isa<CatchReturnInst>(I) ||
+	   isa<CleanupReturnInst>(I);
 }
  
 #endif /* AbstractExecutionEngine.h */

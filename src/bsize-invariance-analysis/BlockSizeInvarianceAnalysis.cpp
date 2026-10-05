@@ -26,34 +26,34 @@ BSizeGPUState BlockSizeInvarianceAnalysis::BuildInitialState() const {
 
 bool BlockSizeInvarianceAnalysis::isBSILibraryCall(const StringRef& name) {
   LLVM_DEBUG(errs() << "... Called function name: " << name << "\n");
-  if (name.equals("llvm.dbg.declare")||
-      name.equals("llvm.ctlz.i32") ||
-      name.equals("llvm.trap") || // RISKY?
-      name.equals("malloc") || // RISKY?
-      name.equals("llvm.memcpy.p0i8.p0i8.i64") || // RISKY!
-      name.equals("llvm.nvvm.barrier0") || // __syncthreads() barrier
-      name.equals("llvm.nvvm.read.ptx.sreg.tid.x") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.tid.y") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.tid.z") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ntid.x") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ntid.y") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ntid.z") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ctaid.x") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ctaid.y") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.ctaid.z") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.nctaid.x") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.nctaid.y") ||
-      name.equals("llvm.nvvm.read.ptx.sreg.nctad.z") ||
-      name.equals("llvm.nvvm.sqrt.f") ||
-      name.equals("llvm.nvvm.saturate.f") ||
-      name.equals("llvm.nvvm.log.f") ||
-      name.equals("llvm.nvvm.lg2.approx.f") ||
-      name.equals("llvm.nvvm.fmax.f") ||
-      name.equals("llvm.nvvm.fmin.f") ||
-      name.equals("llvm.nvvm.mul24.ui") ||
-      name.equals("llvm.umul.with.overflow.i64") ||
-      name.equals("llvm.nvvm.sin.f") ||
-      name.equals("llvm.nvvm.cos.f") ||
+  if (name == ("llvm.dbg.declare")||
+      name == ("llvm.ctlz.i32") ||
+      name == ("llvm.trap") || // RISKY?
+      name == ("malloc") || // RISKY?
+      name == ("llvm.memcpy.p0i8.p0i8.i64") || // RISKY!
+      name == ("llvm.nvvm.barrier0") || // __syncthreads() barrier
+      name == ("llvm.nvvm.read.ptx.sreg.tid.x") ||
+      name == ("llvm.nvvm.read.ptx.sreg.tid.y") ||
+      name == ("llvm.nvvm.read.ptx.sreg.tid.z") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ntid.x") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ntid.y") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ntid.z") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ctaid.x") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ctaid.y") ||
+      name == ("llvm.nvvm.read.ptx.sreg.ctaid.z") ||
+      name == ("llvm.nvvm.read.ptx.sreg.nctaid.x") ||
+      name == ("llvm.nvvm.read.ptx.sreg.nctaid.y") ||
+      name == ("llvm.nvvm.read.ptx.sreg.nctad.z") ||
+      name == ("llvm.nvvm.sqrt.f") ||
+      name == ("llvm.nvvm.saturate.f") ||
+      name == ("llvm.nvvm.log.f") ||
+      name == ("llvm.nvvm.lg2.approx.f") ||
+      name == ("llvm.nvvm.fmax.f") ||
+      name == ("llvm.nvvm.fmin.f") ||
+      name == ("llvm.nvvm.mul24.ui") ||
+      name == ("llvm.umul.with.overflow.i64") ||
+      name == ("llvm.nvvm.sin.f") ||
+      name == ("llvm.nvvm.cos.f") ||
       // Special case for inlined math functions.
       name.contains("_wrapper"))  return true;
    return false;
@@ -62,7 +62,7 @@ bool BlockSizeInvarianceAnalysis::isBSILibraryCall(const StringRef& name) {
 bool BlockSizeInvarianceAnalysis::AreFunctionCallArgsBSI(
     const CallInst* CI, const BSizeGPUState& st) {
   // Check if all arguments are (const).
-  for (unsigned i = 0; i < CI->getNumArgOperands(); i++) {
+  for (unsigned i = 0; i < CI->getNumOperands(); i++) {
     auto argv = st.getValue(CI->getArgOperand(i));
     if (argv.getType() != CONST && argv.getType() != B_CONST) {
       return false;
@@ -74,40 +74,40 @@ bool BlockSizeInvarianceAnalysis::AreFunctionCallArgsBSI(
 BSizeDependenceValue 
 BlockSizeInvarianceAnalysis::getCalledFunctionValue(const StringRef& name,
     const CallInst* I, const BSizeGPUState& st) {
-  if (name.equals("llvm.nvvm.read.ptx.sreg.tid.x")) {
+  if (name == ("llvm.nvvm.read.ptx.sreg.tid.x")) {
     if (ThreadDim_ == 0) return BSizeDependenceValue(TID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.tid.y")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.tid.y")) {
     if (ThreadDim_ == 1) return BSizeDependenceValue(TID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.tid.z")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.tid.z")) {
     if (ThreadDim_ == 2) return BSizeDependenceValue(TID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ntid.x")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ntid.x")) {
     if (ThreadDim_ == 0) return BSizeDependenceValue(BSIZE);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ntid.y")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ntid.y")) {
     if (ThreadDim_ == 1) return BSizeDependenceValue(BSIZE);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ntid.z") ){
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ntid.z") ){
     if (ThreadDim_ == 2) return BSizeDependenceValue(BSIZE);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ctaid.x")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ctaid.x")) {
     if (ThreadDim_ == 0) return BSizeDependenceValue(BID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ctaid.y")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ctaid.y")) {
     if (ThreadDim_ == 1) return BSizeDependenceValue(BID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.ctaid.z")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.ctaid.z")) {
     if (ThreadDim_ == 2) return BSizeDependenceValue(BID);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.nctaid.x")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.nctaid.x")) {
     if (ThreadDim_ == 0) return BSizeDependenceValue(GSIZE);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.nctaid.y")) {
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.nctaid.y")) {
     if (ThreadDim_ == 1) return BSizeDependenceValue(GSIZE);
     else return BSizeDependenceValue(CONST, false, I);
-  } else if (name.equals("llvm.nvvm.read.ptx.sreg.nctaid.z") ){
+  } else if (name == ("llvm.nvvm.read.ptx.sreg.nctaid.z") ){
     if (ThreadDim_ == 2) return BSizeDependenceValue(GSIZE);
     else return BSizeDependenceValue(CONST, false, I);
   } else if (name == "llvm.nvvm.barrier0") {
@@ -518,28 +518,23 @@ BSizeGPUState BlockSizeInvarianceAnalysis::ExecuteInstruction(
     v = abstractRel(st.getValue(in1), st.getValue(in2));
     st.setValue(CI, v);
 
-  } else if (isa<BranchInst>(I)) {
-    const BranchInst* BI = cast<BranchInst>(I);
-    if (BI->isConditional()) {
-      const Value* cond = BI->getCondition();
-      const BasicBlock* nb1 = BI->getSuccessor(0);
-      const BasicBlock* nb2 = BI->getSuccessor(1);
-      BSizeGPUState st1 = st;
-      BSizeGPUState st2 = st;
-      // Get the abstract value for branch condition.
-      BSizeDependenceValue v = st.getValue(cond);
-      // Compute number of threads on the two branches.
-      st1.setNumThreads(st.getNumThreads() && v);
-      st2.setNumThreads(st.getNumThreads() && abstractNeg(v, nullptr));
-      // Add new items to the buffer.
-      AddBlockToExecute(nb1, st1);
-      AddBlockToExecute(nb2, st2);
-    } else {
-      const BasicBlock* nb = BI->getSuccessor(0);
-      AddBlockToExecute(nb, st);
-    }
+  } else if (isa<CondBrInst>(I)) {
+    const CondBrInst* BI = cast<CondBrInst>(I);
+    const Value* cond = BI->getCondition();
+    const BasicBlock* nb1 = BI->getSuccessor(0);
+    const BasicBlock* nb2 = BI->getSuccessor(1);
+    BSizeGPUState st1 = st;
+    BSizeGPUState st2 = st;
+    // Get the abstract value for branch condition.
+    BSizeDependenceValue v = st.getValue(cond);
+    // Compute number of threads on the two branches.
+    st1.setNumThreads(st.getNumThreads() && v);
+    st2.setNumThreads(st.getNumThreads() && abstractNeg(v, nullptr));
+    // Add new items to the buffer.
+    AddBlockToExecute(nb1, st1);
+    AddBlockToExecute(nb2, st2);
 
-  } else if (isa<TerminatorInst>(I)) {
+  } else if (IsTerminator(I)) {
     // If this is a return instruction, also update the function return
     // value. Also, if FunctionReturnValueMap_ is not null.
     if (isa<ReturnInst>(I) && FunctionReturnValueMap_) {
@@ -556,9 +551,8 @@ BSizeGPUState BlockSizeInvarianceAnalysis::ExecuteInstruction(
       }
     }
     // Add next blocks.
-    const TerminatorInst *TI = cast<TerminatorInst>(I);
-    for (unsigned i = 0; i < TI->getNumSuccessors(); i++) {
-      const BasicBlock *nb = TI->getSuccessor(i);
+    for (unsigned i = 0; i < I->getNumSuccessors(); i++) {
+      const BasicBlock *nb = I->getSuccessor(i);
       AddBlockToExecute(nb, st);
     }
   }
