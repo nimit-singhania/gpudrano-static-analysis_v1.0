@@ -56,32 +56,22 @@ block-size invariance analysis) can be done similarly.
 
 1) Get LLVM source:
 
-   Ensure `subversion` is installed. Download the newest version of LLVM:
+   Ensure `git` is installed. Download the newest version of LLVM:
 ```
-    wget https://releases.llvm.org/7.0.0/llvm-7.0.0.src.tar.xz
-    tar -xvf llvm-7.0.0.src.tar.xz
-    mv llvm-7.0.0.src llvm
+    git clone https://github.com/llvm/llvm-project.git
 ```
-2) Get Clang source:
+2) Add GPU Drano to LLVM:
 
-   Change your current working directory to `llvm/tools/` and check out `clang`
-   from the svn repository:
+   Copy GPU Drano into your source code:
 ```
-    wget https://releases.llvm.org/7.0.0/cfe-7.0.0.src.tar.xz
-    tar -xvf cfe-7.0.0.src.tar.xz
-    mv cfe-7.0.0.src clang
+   cp include/* llvm-project/llvm/include/llvm/Transforms/
+   cp -r src/uncoalesced-analysis/* llvm-project/llvm/lib/Transforms/UncoalescedAnalysis
+   cp -r src/bsize-invariance-analysis/* llvm-project/llvm/lib/Transforms/BlockSizeInvarianceAnalysis
+   cp -r tool/llvm-gpudrano/ llvm-project/llvm/tools/
 ```
-3) Add GPU Drano to LLVM:
-
-   Copy GPU Drano's `src/` folder into the directory `llvm/lib/Transforms/UncoalescedAnalysis`
-   in your source code:
-```   
-   cp -r src/abstract-execution/* llvm/lib/Transforms/UncoalescedAnalysis
-   cp -r src/uncoalesced-analysis/* llvm/lib/Transforms/UncoalescedAnalysis
-```
-   This will create a folder called `llvm/lib/Transforms/UncoalescedAnalysis/`. We must 
-   register our pass with the LLVM build system, `cmake`. Therefore, append 
-   `add_subdirectory(UncoalescedAnalysis)` to `llvm/lib/Transforms/CMakeLists.txt`
+   We must further register our pass with the LLVM build system, `cmake`. Therefore, append 
+   `add_subdirectory(UncoalescedAnalysis)` and `add_subdirectory(BlockSizeInvarianceAnalyssi)` to
+   `llvm-project/llvm/lib/Transforms/CMakeLists.txt`
    
    Sample CMakeLists.txt file:
 ```
@@ -96,19 +86,20 @@ block-size invariance analysis) can be done similarly.
    add_subdirectory(ObjCARC)
    add_subdirectory(Coroutines)
    add_subdirectory(UncoalescedAnalysis)
+   add_subdirectory(BlockSizeInvarianceAnalysis)
 ```
-4) Build LLVM and GPU Drano:
+3) Build LLVM and GPU Drano:
 
    From the root directory of Drano, create a `build/` directory. Then,
    change directory to the `build/` directory. Ensure CMake is installed on
    the system. Execute the following commands here:
-```   
-   cmake ../llvm 
-   make
+```
+   cd llvm-project/
+   cmake -S llvm/ -B build/ -G "Unix Makefiles" -DLLVM_ENABLE_PROJECTS="clang;lld"
+   make && sudo make install
 ```
 
-   That's `cmake` with the path to LLVM directory (`../llvm`). CMake configures
-   LLVM for your system. It should generate several files in your current working
+   CMake configures LLVM for your system. It should generate several files in your current working
    directory (`build/`). The command `make` builds LLVM and Drano.
 
    Ideally, use `make -j N` where N is your number of cores to build with in 
@@ -120,13 +111,13 @@ block-size invariance analysis) can be done similarly.
    failed parts of the build, and still save more time than not using `-j` from
    the start.
 
-5) Install LLVM and GPU Drano 
+4) Install LLVM and GPU Drano 
    Perform `sudo make install`. This should install the libraries and binaries in the
    default location (or the specified location). If installed locally, this guide
    assumes bash can find the command in it's PATH.
 
    The above is a quick start guide. If you're unfamiliar with LLVM you may find all
-   details for installation at: http://llvm.org/docs/GettingStarted.html
+   details for installation at: http://github.com/llvm-project in `llvm/docs/GettingStarted.md`.
 
 ### Setup NVIDIA drivers, toolkit and SDK
 The script `installnrun.sh` briefly describes the process to build NVIDIA drivers,
